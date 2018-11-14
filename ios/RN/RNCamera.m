@@ -562,6 +562,15 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                 [connection setVideoMirrored:YES];
             }
         }
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        BOOL fileExists = [fileManager fileExistsAtPath:path];
+        
+        if (fileExists && [fileManager isDeletableFileAtPath:path]) {
+            NSError *error;
+            BOOL success = [fileManager removeItemAtPath:path error:&error];
+            if (!success) RCTLogWarn(@"The video path is already in use and could not be deleted %@", [error localizedDescription]);
+        }
 
         NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
         [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
